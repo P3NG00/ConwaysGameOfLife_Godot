@@ -6,6 +6,11 @@ const CELL_SIZE: int = 16
 const GRID_SIZE: Vector2i = Vector2i(60, 60)
 const COLOR_ACTIVE: Color = Color('#FFFFFF')
 const COLOR_INACTIVE: Color = Color('#101010')
+const NEIGHBOR_OFFSETS: Array[Vector2i] = [
+    Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
+    Vector2i(-1,  0),                  Vector2i(1,  0),
+    Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
+]
 
 # variables
 const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
@@ -28,11 +33,8 @@ func draw_cell(x: int, y: int) -> void:
     var color = get_cell_color(x, y)
     draw_rect(Rect2(draw_pos, DRAW_SIZE), color)
 
-func get_cell_index(x: int, y: int) -> int:
-    return x + y * GRID_SIZE.x
-
 func get_cell(x: int, y: int) -> Cell:
-    return cells[get_cell_index(x, y)]
+    return cells[x + y * GRID_SIZE.x]
 
 func get_cell_color(x: int, y: int) -> Color:
     return COLOR_ACTIVE if get_cell(x, y).active else COLOR_INACTIVE
@@ -41,20 +43,52 @@ func toggle_cell(x: int, y: int) -> void:
     var cell: Cell = get_cell(x, y)
     cell.active = not cell.active
 
-func handle_click(x: int, y: int) -> void:
-    toggle_cell(x, y)
-    queue_redraw()
+func get_active_neighbors(x: int, y: int) -> int:
+    var active_neighbors = 0
+    for offset in NEIGHBOR_OFFSETS:
+        var nx: int = x + offset.x
+        var ny: int = y + offset.y
+        if nx < 0 or nx >= GRID_SIZE.x or ny < 0 or ny >= GRID_SIZE.y:
+            continue
+        # use last state to check for active neighbors
+        if get_cell(nx, ny).active_last:
+            active_neighbors += 1
+    return active_neighbors
+
+func update_cell(x: int, y: int) -> void:
+    var cell: Cell = get_cell(x, y)
+    var active_neighbors: int = get_active_neighbors(x, y)
+    # apply game of life rules
+    cell.active = active_neighbors == 2 or active_neighbors == 3 if cell.active else active_neighbors == 3
+
+func next_frame() -> void:
+    # cache last active state for update
+    for x in GRID_SIZE.x:
+        for y in GRID_SIZE.y:
+            var cell: Cell = get_cell(x, y)
+            cell.active_last = cell.active
+    # update active state
+    for x in GRID_SIZE.x:
+        for y in GRID_SIZE.y:
+            update_cell(x, y)
 
 
 # cell
 class Cell:
+    # live active state
     var active: bool = false
-    # TODO keep track of last state for comparison while updating active state
+    # used to compare last active state while being updated
+    var active_last: bool = false
 
 
 # godot
 func _ready() -> void:
     create_cells()
+
+func _process(_delta: float) -> void:
+    if Input.is_action_just_pressed('cgol_next_frame'):
+        next_frame()
+        queue_redraw()
 
 func _input(event: InputEvent) -> void:
     if not event is InputEventMouseButton:
@@ -64,7 +98,8 @@ func _input(event: InputEvent) -> void:
         return
     var x: int = int(mouse_event.position.x / CELL_SIZE)
     var y: int = int(mouse_event.position.y / CELL_SIZE)
-    handle_click(x, y)
+    toggle_cell(x, y)
+    queue_redraw()
 
 func _draw() -> void:
     draw_cells()
