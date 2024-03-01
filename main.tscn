@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://tfvw2d1nueko"]
+
+[ext_resource type="Script" path="res://main.gd" id="1_0fcyj"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_0fcyj")
+cell_size = null
+grid_size = Vector2i(59, 59)
+color_inactive = Color(0.0627451, 0.0627451, 0.0627451, 1)
+
+[node name="Camera2D" type="Camera2D" parent="."]
