@@ -15,7 +15,7 @@ var cells: Array[Cell]
 
 # functions
 func create_cells() -> void:
-    for i in LENGTH:
+    for i in GRID_SIZE.x * GRID_SIZE.y:
         cells.append(Cell.new())
 
 func draw_cell(x: int, y: int) -> void:
