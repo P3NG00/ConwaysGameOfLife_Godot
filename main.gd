@@ -9,14 +9,19 @@ const COLOR_INACTIVE: Color = Color('#101010')
 
 # variables
 const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
-const LENGTH: int = GRID_SIZE.x * GRID_SIZE.y
 var cells: Array[Cell]
 
 
 # functions
 func create_cells() -> void:
-    for i in GRID_SIZE.x * GRID_SIZE.y:
-        cells.append(Cell.new())
+    for x in GRID_SIZE.x:
+        for y in GRID_SIZE.y:
+            cells.append(Cell.new())
+
+func draw_cells() -> void:
+    for x in GRID_SIZE.x:
+        for y in GRID_SIZE.y:
+            draw_cell(x, y)
 
 func draw_cell(x: int, y: int) -> void:
     var draw_pos: Vector2 = Vector2(x, y) * CELL_SIZE
@@ -36,6 +41,16 @@ func toggle_cell(x: int, y: int) -> void:
     var cell: Cell = get_cell(x, y)
     cell.active = not cell.active
 
+func handle_click(x: int, y: int) -> void:
+    toggle_cell(x, y)
+    queue_redraw()
+
+
+# cell
+class Cell:
+    var active: bool = false
+    # TODO keep track of last state for comparison while updating active state
+
 
 # godot
 func _ready() -> void:
@@ -47,16 +62,9 @@ func _input(event: InputEvent) -> void:
     var mouse_event: InputEventMouseButton = event as InputEventMouseButton
     if not mouse_event.pressed or mouse_event.button_index != MOUSE_BUTTON_LEFT:
         return
-    var cell_position: Vector2i = Vector2i(mouse_event.position) / CELL_SIZE
-    toggle_cell(cell_position.x, cell_position.y)
-    queue_redraw()
+    var x: int = int(mouse_event.position.x / CELL_SIZE)
+    var y: int = int(mouse_event.position.y / CELL_SIZE)
+    handle_click(x, y)
 
 func _draw() -> void:
-    for x in GRID_SIZE.x:
-        for y in GRID_SIZE.y:
-            draw_cell(x, y)
-
-
-# cell
-class Cell:
-    var active: bool = false
+    draw_cells()
