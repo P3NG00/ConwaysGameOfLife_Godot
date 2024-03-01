@@ -15,10 +15,6 @@ run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
 
-[autoload]
-
-Master="*res://master.gd"
-
 [display]
 
 window/size/viewport_width=960
@@ -26,4 +22,4 @@ window/size/viewport_height=960
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.0627451, 0.0627451, 0.0627451, 1)
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)

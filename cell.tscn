@@ -1,8 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://sdhjj53xxqy0"]
-
-[ext_resource type="Texture2D" uid="uid://d6envjpvvjl1" path="res://filled.png" id="1_14ckg"]
-[ext_resource type="Script" path="res://cell.gd" id="2_kfe65"]
-
-[node name="Cell" type="Sprite2D"]
-texture = ExtResource("1_14ckg")
-script = ExtResource("2_kfe65")
