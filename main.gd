@@ -16,8 +16,8 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 # variables
 const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
 const MOUSE_MAX: Vector2i = GRID_SIZE * CELL_SIZE
-var cells: Array[Cell]
 static var current_state: bool = false
+var cells: Array[Cell]
 
 
 # functions
@@ -61,12 +61,13 @@ func get_active_neighbors(x: int, y: int) -> int:
 func update_cell(x: int, y: int) -> void:
     var cell: Cell = get_cell(x, y)
     var active_neighbors: int = get_active_neighbors(x, y)
-    # apply game of life rules
+    # apply game of life rules (use last state to set new state)
     cell.active = active_neighbors == 2 or active_neighbors == 3 if cell.active_last else active_neighbors == 3
 
 func next_frame() -> void:
+    # flip states
     current_state = not current_state
-    # update active state
+    # update cells
     for x in GRID_SIZE.x:
         for y in GRID_SIZE.y:
             update_cell(x, y)
@@ -74,15 +75,20 @@ func next_frame() -> void:
 
 # cell
 class Cell:
-    var states: Array[bool] = [false, false]
+    # cell states that work off of a boolean flip.
+    # when current_state is true, active state is the first state and last state is the last state.
+    # when current_state is false, active state is the last state and last state is the first state.
+    var _states: Array[bool] = [false, false]
+    # used to set or get the current state of the cell
     var active: bool:
         set(value):
-            states[int(CGOL.current_state)] = value
+            _states[int(CGOL.current_state)] = value
         get:
-            return states[int(CGOL.current_state)]
+            return _states[int(CGOL.current_state)]
+    # used to check the last state of the cell
     var active_last: bool:
         get:
-            return states[int(not CGOL.current_state)]
+            return _states[int(not CGOL.current_state)]
 
 
 # godot
