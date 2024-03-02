@@ -1,3 +1,4 @@
+class_name CGOL
 extends Node2D
 
 
@@ -16,6 +17,7 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
 const MOUSE_MAX: Vector2i = GRID_SIZE * CELL_SIZE
 var cells: Array[Cell]
+static var current_state: bool = false
 
 
 # functions
@@ -60,14 +62,10 @@ func update_cell(x: int, y: int) -> void:
     var cell: Cell = get_cell(x, y)
     var active_neighbors: int = get_active_neighbors(x, y)
     # apply game of life rules
-    cell.active = active_neighbors == 2 or active_neighbors == 3 if cell.active else active_neighbors == 3
+    cell.active = active_neighbors == 2 or active_neighbors == 3 if cell.active_last else active_neighbors == 3
 
 func next_frame() -> void:
-    # cache last active state for update
-    for x in GRID_SIZE.x:
-        for y in GRID_SIZE.y:
-            var cell: Cell = get_cell(x, y)
-            cell.active_last = cell.active
+    current_state = not current_state
     # update active state
     for x in GRID_SIZE.x:
         for y in GRID_SIZE.y:
@@ -76,10 +74,15 @@ func next_frame() -> void:
 
 # cell
 class Cell:
-    # live active state
-    var active: bool = false
-    # used to compare last active state while being updated
-    var active_last: bool = false
+    var states: Array[bool] = [false, false]
+    var active: bool:
+        set(value):
+            states[int(CGOL.current_state)] = value
+        get:
+            return states[int(CGOL.current_state)]
+    var active_last: bool:
+        get:
+            return states[int(not CGOL.current_state)]
 
 
 # godot
