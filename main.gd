@@ -7,15 +7,15 @@ const CELL_SIZE: int = 16
 const GRID_SIZE: Vector2i = Vector2i(60, 60)
 const COLOR_ACTIVE: Color = Color('#FFFFFF')
 const COLOR_INACTIVE: Color = Color('#101010')
+
+# variables
+const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
+const MOUSE_MAX: Vector2i = GRID_SIZE * CELL_SIZE
 const NEIGHBOR_OFFSETS: Array[Vector2i] = [
     Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
     Vector2i(-1,  0),                  Vector2i(1,  0),
     Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
 ]
-
-# variables
-const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
-const MOUSE_MAX: Vector2i = GRID_SIZE * CELL_SIZE
 static var current_state: bool = false
 var cells: Array[Cell]
 
