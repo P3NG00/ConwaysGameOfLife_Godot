@@ -14,6 +14,7 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 
 # variables
 const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
+const MOUSE_MAX: Vector2i = GRID_SIZE * CELL_SIZE
 var cells: Array[Cell]
 
 
@@ -96,8 +97,11 @@ func _input(event: InputEvent) -> void:
     var mouse_event: InputEventMouseButton = event as InputEventMouseButton
     if not mouse_event.pressed or mouse_event.button_index != MOUSE_BUTTON_LEFT:
         return
-    var x: int = int(mouse_event.position.x / CELL_SIZE)
-    var y: int = int(mouse_event.position.y / CELL_SIZE)
+    var mpos: Vector2 = mouse_event.position
+    if mpos.x < 0 or mpos.x >= MOUSE_MAX.x or mpos.y < 0 or mpos.y >= MOUSE_MAX.y:
+        return
+    var x: int = int(mpos.x / CELL_SIZE)
+    var y: int = int(mpos.y / CELL_SIZE)
     toggle_cell(x, y)
     queue_redraw()
 
