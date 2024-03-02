@@ -76,8 +76,7 @@ func next_frame() -> void:
 # cell
 class Cell:
     # cell states that work off of a boolean flip.
-    # when current_state is true, active state is the first state and last state is the last state.
-    # when current_state is false, active state is the last state and last state is the first state.
+    # states will take turns being used as the current active state and the cached previous state
     var _states: Array[bool] = [false, false]
     # used to set or get the current state of the cell
     var active: bool:
