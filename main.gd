@@ -72,6 +72,15 @@ func next_frame() -> void:
         for y in GRID_SIZE.y:
             update_cell(x, y)
 
+func toggle_cell_under_mouse() -> void:
+    var mpos: Vector2 = get_viewport().get_mouse_position()
+    if mpos.x < 0 or mpos.x >= MOUSE_MAX.x or mpos.y < 0 or mpos.y >= MOUSE_MAX.y:
+        return
+    var x: int = int(mpos.x / CELL_SIZE)
+    var y: int = int(mpos.y / CELL_SIZE)
+    toggle_cell(x, y)
+    queue_redraw()
+
 
 # cell
 class Cell:
@@ -98,20 +107,8 @@ func _process(_delta: float) -> void:
     if Input.is_action_just_pressed('cgol_next_frame'):
         next_frame()
         queue_redraw()
-
-func _input(event: InputEvent) -> void:
-    if not event is InputEventMouseButton:
-        return
-    var mouse_event: InputEventMouseButton = event as InputEventMouseButton
-    if not mouse_event.pressed or mouse_event.button_index != MOUSE_BUTTON_LEFT:
-        return
-    var mpos: Vector2 = mouse_event.position
-    if mpos.x < 0 or mpos.x >= MOUSE_MAX.x or mpos.y < 0 or mpos.y >= MOUSE_MAX.y:
-        return
-    var x: int = int(mpos.x / CELL_SIZE)
-    var y: int = int(mpos.y / CELL_SIZE)
-    toggle_cell(x, y)
-    queue_redraw()
+    if Input.is_action_just_pressed('cgol_toggle_cell'):
+        toggle_cell_under_mouse()
 
 func _draw() -> void:
     draw_cells()
