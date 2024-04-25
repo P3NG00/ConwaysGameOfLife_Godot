@@ -19,8 +19,18 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 static var current_state: bool = false
 var cells: Array[Cell]
 
+var mouse_drag_held: bool = false
+var mouse_drag_position_last: Vector2 = Vector2.ZERO
+var camera_offset: Vector2 = Vector2.ZERO
+
 
 # functions
+func get_mouse_position() -> Vector2:
+    return get_viewport().get_mouse_position()
+
+func get_mouse_position_offset() -> Vector2:
+    return get_mouse_position() - camera_offset
+
 func create_cells() -> void:
     for x in GRID_SIZE.x:
         for y in GRID_SIZE.y:
@@ -34,7 +44,7 @@ func draw_cells() -> void:
 func draw_cell(x: int, y: int) -> void:
     var draw_pos: Vector2 = Vector2(x, y) * CELL_SIZE
     var color = get_cell_color(x, y)
-    draw_rect(Rect2(draw_pos, DRAW_SIZE), color)
+    draw_rect(Rect2(draw_pos + camera_offset, DRAW_SIZE), color)
 
 func get_cell(x: int, y: int) -> Cell:
     return cells[x + y * GRID_SIZE.x]
@@ -71,14 +81,21 @@ func next_frame() -> void:
     for x in GRID_SIZE.x:
         for y in GRID_SIZE.y:
             update_cell(x, y)
+    queue_redraw()
 
 func toggle_cell_under_mouse() -> void:
-    var mpos: Vector2 = get_viewport().get_mouse_position()
+    var mpos: Vector2 = get_mouse_position() - camera_offset
     if mpos.x < 0 or mpos.x >= MOUSE_MAX.x or mpos.y < 0 or mpos.y >= MOUSE_MAX.y:
         return
     var x: int = int(mpos.x / CELL_SIZE)
     var y: int = int(mpos.y / CELL_SIZE)
     toggle_cell(x, y)
+    queue_redraw()
+
+func update_mouse_drag() -> void:
+    var mpos: Vector2 = get_mouse_position()
+    camera_offset += mpos - mouse_drag_position_last
+    mouse_drag_position_last = mpos
     queue_redraw()
 
 
@@ -104,11 +121,20 @@ func _ready() -> void:
     create_cells()
 
 func _process(_delta: float) -> void:
+    # next frame
     if Input.is_action_just_pressed('cgol_next_frame'):
         next_frame()
-        queue_redraw()
+    # toggle cell under mouse
     if Input.is_action_just_pressed('cgol_toggle_cell'):
         toggle_cell_under_mouse()
+    # drag view
+    if Input.is_action_just_pressed('cgol_drag_view'):
+        mouse_drag_held = true
+        mouse_drag_position_last = get_mouse_position()
+    if Input.is_action_just_released('cgol_drag_view'):
+        mouse_drag_held = false
+    if mouse_drag_held:
+        update_mouse_drag()
 
 func _draw() -> void:
     draw_cells()
