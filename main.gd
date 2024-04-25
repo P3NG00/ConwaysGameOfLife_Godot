@@ -1,5 +1,5 @@
 class_name CGOL
-extends Node2D
+extends Control
 
 
 # config
@@ -19,7 +19,7 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 static var current_state: bool = false
 var cells: Array[Cell]
 
-var mouse_drag_held: bool = false
+# view drag variables
 var mouse_drag_position_last: Vector2 = Vector2.ZERO
 var camera_offset: Vector2 = Vector2.ZERO
 
@@ -127,13 +127,10 @@ func _process(_delta: float) -> void:
     # toggle cell under mouse
     if Input.is_action_just_pressed('cgol_toggle_cell'):
         toggle_cell_under_mouse()
-    # drag view
+    # view drag
     if Input.is_action_just_pressed('cgol_drag_view'):
-        mouse_drag_held = true
         mouse_drag_position_last = get_mouse_position()
-    if Input.is_action_just_released('cgol_drag_view'):
-        mouse_drag_held = false
-    if mouse_drag_held:
+    if Input.is_action_pressed('cgol_drag_view'):
         update_mouse_drag()
 
 func _draw() -> void:
