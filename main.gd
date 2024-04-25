@@ -8,27 +8,29 @@ const GRID_SIZE: Vector2i = Vector2i(60, 60)
 const COLOR_ACTIVE: Color = Color('#FFFFFF')
 const COLOR_INACTIVE: Color = Color('#101010')
 
-# variables
-const DRAW_SIZE: Vector2 = Vector2(CELL_SIZE, CELL_SIZE)
+# constants
+const DRAW_SIZE: Vector2i = Vector2i(CELL_SIZE, CELL_SIZE)
 const MOUSE_MAX: Vector2i = GRID_SIZE * CELL_SIZE
 const NEIGHBOR_OFFSETS: Array[Vector2i] = [
     Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1),
     Vector2i(-1,  0),                  Vector2i(1,  0),
     Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
 ]
+
+# cell state variables
 static var current_state: bool = false
 var cells: Array[Cell]
 
 # view drag variables
-var mouse_drag_position_last: Vector2 = Vector2.ZERO
-var camera_offset: Vector2 = Vector2.ZERO
+var mouse_drag_position_last: Vector2i = Vector2i.ZERO
+var camera_offset: Vector2i = Vector2i.ZERO
 
 
 # functions
-func get_mouse_position() -> Vector2:
+func get_mouse_position() -> Vector2i:
     return get_viewport().get_mouse_position()
 
-func get_mouse_position_offset() -> Vector2:
+func get_mouse_position_offset() -> Vector2i:
     return get_mouse_position() - camera_offset
 
 func create_cells() -> void:
@@ -37,14 +39,18 @@ func create_cells() -> void:
             cells.append(Cell.new())
 
 func draw_cells() -> void:
+    # draw background
+    draw_rect(Rect2(camera_offset, MOUSE_MAX), COLOR_INACTIVE)
+    # draw cells
     for x in GRID_SIZE.x:
         for y in GRID_SIZE.y:
             draw_cell(x, y)
 
 func draw_cell(x: int, y: int) -> void:
-    var draw_pos: Vector2 = Vector2(x, y) * CELL_SIZE
-    var color = get_cell_color(x, y)
-    draw_rect(Rect2(draw_pos + camera_offset, DRAW_SIZE), color)
+    if not get_cell(x, y).active:
+        return
+    var draw_pos: Vector2i = Vector2i(x, y) * CELL_SIZE
+    draw_rect(Rect2(draw_pos + camera_offset, DRAW_SIZE), COLOR_ACTIVE)
 
 func get_cell(x: int, y: int) -> Cell:
     return cells[x + y * GRID_SIZE.x]
@@ -84,16 +90,15 @@ func next_frame() -> void:
     queue_redraw()
 
 func toggle_cell_under_mouse() -> void:
-    var mpos: Vector2 = get_mouse_position() - camera_offset
+    var mpos: Vector2i = get_mouse_position() - camera_offset
     if mpos.x < 0 or mpos.x >= MOUSE_MAX.x or mpos.y < 0 or mpos.y >= MOUSE_MAX.y:
         return
-    var x: int = int(mpos.x / CELL_SIZE)
-    var y: int = int(mpos.y / CELL_SIZE)
-    toggle_cell(x, y)
+    mpos /= CELL_SIZE
+    toggle_cell(mpos.x, mpos.y)
     queue_redraw()
 
 func update_mouse_drag() -> void:
-    var mpos: Vector2 = get_mouse_position()
+    var mpos: Vector2i = get_mouse_position()
     camera_offset += mpos - mouse_drag_position_last
     mouse_drag_position_last = mpos
     queue_redraw()
