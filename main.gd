@@ -4,7 +4,7 @@ extends Control
 
 # config
 const DEFAULT_CELL_SIZE: int = 16
-const DEFAULT_GRID_SIZE: Vector2i = Vector2i(60, 60)
+const DEFAULT_GRID_SIZE: Vector2i = Vector2i(80, 45)
 const COLOR_ACTIVE: Color = Color('#FFFFFF')
 const COLOR_INACTIVE: Color = Color('#101010')
 
@@ -22,7 +22,7 @@ var cells: Array[Cell]
 # display variables
 var cell_size: int = DEFAULT_CELL_SIZE
 var cell_draw_size: Vector2i = Vector2i(cell_size, cell_size)
-var cell_grid_size: Vector2i = DEFAULT_GRID_SIZE # TODO make size adjustable
+var cell_grid_size: Vector2i = DEFAULT_GRID_SIZE # TODO make manually adjustable
 var cell_grid_draw_size: Vector2i = cell_grid_size * cell_size
 
 # view drag variables
@@ -33,6 +33,11 @@ var camera_offset: Vector2i = Vector2i.ZERO
 # functions
 func get_mouse_position() -> Vector2i:
     return get_viewport().get_mouse_position()
+
+func adjust_grid_size_to_viewport() -> void:
+    # ceil to make sure the grid is always big enough to cover the viewport
+    cell_grid_size = (get_viewport_rect().size / cell_size).ceil()
+    cell_grid_draw_size = cell_grid_size * cell_size
 
 func create_cells() -> void:
     for x in cell_grid_size.x:
@@ -104,7 +109,6 @@ func update_mouse_drag() -> void:
     mouse_drag_position_last = mpos
     queue_redraw()
 
-# call when 'cell_size' changes to recalculate dependent variables
 func adjust_cell_size(n: int) -> void:
     cell_size = max(1, cell_size + n)
     cell_draw_size = Vector2i(cell_size, cell_size)
@@ -131,9 +135,11 @@ class Cell:
 
 # godot
 func _ready() -> void:
+    adjust_grid_size_to_viewport()
     create_cells()
 
 func _process(_delta: float) -> void:
+    # TODO add play/pause
     # next frame
     if Input.is_action_just_pressed('cgol_next_frame'):
         next_frame()
