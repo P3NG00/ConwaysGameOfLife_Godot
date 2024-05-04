@@ -53,6 +53,7 @@ func draw_cells() -> void:
             draw_cell(x, y)
 
 func draw_cell(x: int, y: int) -> void:
+    # inactive color drawn as background, active color drawn as cell
     if not get_cell(x, y).active:
         return
     var draw_pos: Vector2i = Vector2i(x, y) * cell_size
@@ -60,9 +61,6 @@ func draw_cell(x: int, y: int) -> void:
 
 func get_cell(x: int, y: int) -> Cell:
     return cells[x + y * cell_grid_size.x]
-
-func get_cell_color(x: int, y: int) -> Color:
-    return COLOR_ACTIVE if get_cell(x, y).active else COLOR_INACTIVE
 
 func toggle_cell(x: int, y: int) -> void:
     var cell: Cell = get_cell(x, y)
