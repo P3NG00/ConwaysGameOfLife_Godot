@@ -15,8 +15,12 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
     Vector2i(-1,  1), Vector2i(0,  1), Vector2i(1,  1),
 ]
 
+# references
+@onready var timer: Timer = $Timer
+
 # cell variables
 static var current_state: bool = false
+var paused: bool = true
 var cells: Array[Cell]
 
 # display variables
@@ -137,7 +141,14 @@ func _ready() -> void:
     create_cells()
 
 func _process(_delta: float) -> void:
-    # TODO add play/pause
+    # play/pause
+    if Input.is_action_just_pressed('cgol_play_pause'):
+        if paused:
+            timer.start()
+            paused = false
+        else:
+            timer.stop()
+            paused = true
     # next frame
     if Input.is_action_just_pressed('cgol_next_frame'):
         next_frame()
