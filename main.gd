@@ -6,7 +6,7 @@ extends Control
 const DEFAULT_CELL_SIZE: int = 16
 const DEFAULT_GRID_SIZE: Vector2i = Vector2i(80, 45)
 const COLOR_ACTIVE: Color = Color('#FFFFFF')
-const COLOR_INACTIVE: Color = Color('#101010')
+# const COLOR_INACTIVE: Color = Color('#101010')
 
 # constants
 const NEIGHBOR_OFFSETS: Array[Vector2i] = [
@@ -49,8 +49,6 @@ func create_cells() -> void:
             cells.append(Cell.new())
 
 func draw_cells() -> void:
-    # draw background
-    draw_rect(Rect2(camera_offset, cell_grid_draw_size), COLOR_INACTIVE)
     # draw cells
     for x in cell_grid_size.x:
         for y in cell_grid_size.y:
