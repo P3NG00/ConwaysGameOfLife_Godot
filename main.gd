@@ -71,10 +71,9 @@ func toggle_cell(x: int, y: int) -> void:
 func get_active_neighbors(x: int, y: int) -> int:
     var active_neighbors = 0
     for offset in NEIGHBOR_OFFSETS:
-        var nx: int = x + offset.x
-        var ny: int = y + offset.y
-        if nx < 0 or nx >= cell_grid_size.x or ny < 0 or ny >= cell_grid_size.y:
-            continue
+        # add grid size to fix negative modulo when wrapping around
+        var nx: int = (x + offset.x + cell_grid_size.x) % cell_grid_size.x
+        var ny: int = (y + offset.y + cell_grid_size.y) % cell_grid_size.y
         # use last state to check for active neighbors
         if get_cell(nx, ny).active_last:
             active_neighbors += 1
