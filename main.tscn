@@ -16,4 +16,42 @@ script = ExtResource("1_0fcyj")
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
 
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Label" type="Label" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "click anywhere to toggle cells"
+
+[node name="HFlowContainer" type="HFlowContainer" parent="MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+
+[node name="ButtonPlayPause" type="Button" parent="MarginContainer/HFlowContainer"]
+custom_minimum_size = Vector2(256, 64)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "play / pause"
+
+[node name="ButtonReset" type="Button" parent="MarginContainer/HFlowContainer"]
+custom_minimum_size = Vector2(256, 64)
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+text = "reset"
+
 [connection signal="timeout" from="Timer" to="." method="next_frame"]
+[connection signal="button_up" from="MarginContainer/HFlowContainer/ButtonPlayPause" to="." method="toggle_play_pause"]
+[connection signal="button_up" from="MarginContainer/HFlowContainer/ButtonReset" to="." method="create_cells"]

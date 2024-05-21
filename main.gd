@@ -43,6 +43,7 @@ func adjust_grid_size_to_viewport() -> void:
     cell_grid_draw_size = cell_grid_size * cell_size
 
 func create_cells() -> void:
+    cells.clear()
     for x in cell_grid_size.x:
         for y in cell_grid_size.y:
             cells.append(Cell.new())
@@ -113,6 +114,12 @@ func adjust_cell_size(n: int) -> void:
     cell_grid_draw_size = cell_grid_size * cell_size
     queue_redraw()
 
+func toggle_play_pause() -> void:
+    if timer.is_stopped():
+        timer.start()
+    else:
+        timer.stop()
+
 
 # cell
 class Cell:
@@ -133,16 +140,14 @@ class Cell:
 
 # godot
 func _ready() -> void:
+    camera_offset = Vector2i.ZERO
     adjust_grid_size_to_viewport()
     create_cells()
 
 func _process(_delta: float) -> void:
     # play/pause
     if Input.is_action_just_pressed('cgol_play_pause'):
-        if timer.is_stopped():
-            timer.start()
-        else:
-            timer.stop()
+        toggle_play_pause()
     # next frame
     if Input.is_action_just_pressed('cgol_next_frame'):
         next_frame()
