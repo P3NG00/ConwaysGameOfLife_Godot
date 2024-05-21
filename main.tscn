@@ -21,10 +21,19 @@ theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="Label" type="Label" parent="UI/MarginContainer"]
+[node name="LabelInstructions" type="Label" parent="UI/MarginContainer"]
 layout_mode = 2
+size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "click anywhere to toggle cells"
+
+[node name="LabelPlaying" type="Label" parent="UI/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "text"
+horizontal_alignment = 2
+vertical_alignment = 1
 
 [node name="HFlowContainer" type="HFlowContainer" parent="UI/MarginContainer"]
 layout_mode = 2

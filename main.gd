@@ -17,6 +17,7 @@ const NEIGHBOR_OFFSETS: Array[Vector2i] = [
 
 # references
 @onready var timer: Timer = $Timer
+@onready var label_playing: Label = $UI/MarginContainer/LabelPlaying
 
 # cell variables
 static var current_state: bool = false
@@ -115,8 +116,16 @@ func adjust_cell_size(n: int) -> void:
     cell_grid_draw_size = cell_grid_size * cell_size
     queue_redraw()
 
+func play() -> void:
+    timer.start()
+    label_playing.text = 'playing!'
+
+func pause() -> void:
+    timer.stop()
+    label_playing.text = 'paused.'
+
 func toggle_play_pause() -> void:
-    timer.start() if timer.is_stopped() else timer.stop()
+    play() if timer.is_stopped() else pause()
 
 
 # cell
@@ -138,6 +147,7 @@ func _ready() -> void:
     camera_offset = Vector2i.ZERO
     adjust_grid_size_to_viewport()
     create_cells()
+    pause()
 
 func _process(_delta: float) -> void:
     # play/pause
