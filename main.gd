@@ -1,5 +1,5 @@
 class_name CGOL
-extends Control
+extends Node2D
 
 
 # config
@@ -25,7 +25,7 @@ var cells: Array[Cell]
 # display variables
 var cell_size: int = DEFAULT_CELL_SIZE
 var cell_draw_size: Vector2i = Vector2i(cell_size, cell_size)
-var cell_grid_size: Vector2i = DEFAULT_GRID_SIZE # TODO make manually adjustable
+var cell_grid_size: Vector2i = DEFAULT_GRID_SIZE # TODO remove, make infinite
 var cell_grid_draw_size: Vector2i = cell_grid_size * cell_size
 
 # view drag variables
@@ -47,6 +47,7 @@ func create_cells() -> void:
     for x in cell_grid_size.x:
         for y in cell_grid_size.y:
             cells.append(Cell.new())
+    queue_redraw()
 
 func draw_cells() -> void:
     # draw cells
@@ -115,10 +116,7 @@ func adjust_cell_size(n: int) -> void:
     queue_redraw()
 
 func toggle_play_pause() -> void:
-    if timer.is_stopped():
-        timer.start()
-    else:
-        timer.stop()
+    timer.start() if timer.is_stopped() else timer.stop()
 
 
 # cell
@@ -128,14 +126,11 @@ class Cell:
     var _states: Array[bool] = [false, false]
     # used to set or get the current state of the cell
     var active: bool:
-        set(value):
-            _states[int(CGOL.current_state)] = value
-        get:
-            return _states[int(CGOL.current_state)]
+        set(value): _states[int(CGOL.current_state)] = value
+        get: return _states[int(CGOL.current_state)]
     # used to check the last state of the cell
     var active_last: bool:
-        get:
-            return _states[int(not CGOL.current_state)]
+        get: return _states[int(not CGOL.current_state)]
 
 
 # godot
@@ -151,9 +146,6 @@ func _process(_delta: float) -> void:
     # next frame
     if Input.is_action_just_pressed('cgol_next_frame'):
         next_frame()
-    # toggle cell under mouse
-    if Input.is_action_just_pressed('cgol_toggle_cell'):
-        toggle_cell_under_mouse()
     # view drag
     if Input.is_action_just_pressed('cgol_drag_view'):
         mouse_drag_position_last = get_mouse_position()
@@ -164,6 +156,16 @@ func _process(_delta: float) -> void:
         adjust_cell_size(1)
     if Input.is_action_just_pressed('cgol_zoom_out'):
         adjust_cell_size(-1)
+
+func _unhandled_input(event: InputEvent) -> void:
+    # toggle cell under mouse
+    # hardcoded to prevent toggling behind UI
+    if not event is InputEventMouseButton:
+        return
+    var mouse_button_event: InputEventMouseButton = event as InputEventMouseButton
+    if mouse_button_event.button_index != MOUSE_BUTTON_LEFT or not mouse_button_event.pressed:
+        return
+    toggle_cell_under_mouse()
 
 func _draw() -> void:
     draw_cells()
