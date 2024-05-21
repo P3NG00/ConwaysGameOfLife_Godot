@@ -4,7 +4,6 @@ extends Node2D
 
 # config
 const DEFAULT_CELL_SIZE: int = 16
-const DEFAULT_GRID_SIZE: Vector2i = Vector2i(80, 45)
 const COLOR_ACTIVE: Color = Color('#FFFFFF')
 # const COLOR_INACTIVE: Color = Color('#101010')
 
@@ -26,8 +25,8 @@ var cells: Array[Cell]
 # display variables
 var cell_size: int = DEFAULT_CELL_SIZE
 var cell_draw_size: Vector2i = Vector2i(cell_size, cell_size)
-var cell_grid_size: Vector2i = DEFAULT_GRID_SIZE # TODO remove, make infinite
-var cell_grid_draw_size: Vector2i = cell_grid_size * cell_size
+var cell_grid_size: Vector2i # TODO remove, make infinite
+var cell_grid_draw_size: Vector2i
 
 # view drag variables
 var mouse_drag_position_last: Vector2i = Vector2i.ZERO
@@ -110,11 +109,17 @@ func update_mouse_drag() -> void:
     mouse_drag_position_last = mpos
     queue_redraw()
 
-func adjust_cell_size(n: int) -> void:
-    cell_size = max(1, cell_size + n)
+func adjust_cell_size(adjustment: int) -> void:
+    cell_size = max(1, cell_size + adjustment)
     cell_draw_size = Vector2i(cell_size, cell_size)
     cell_grid_draw_size = cell_grid_size * cell_size
     queue_redraw()
+
+static func cell_state_index_current() -> int:
+    return int(current_state)
+
+static func cell_state_index_last() -> int:
+    return int(not current_state)
 
 func play() -> void:
     timer.start()
@@ -135,11 +140,11 @@ class Cell:
     var _states: Array[bool] = [false, false]
     # used to set or get the current state of the cell
     var active: bool:
-        set(value): _states[int(CGOL.current_state)] = value
-        get: return _states[int(CGOL.current_state)]
+        set(value): _states[CGOL.cell_state_index_current()] = value
+        get: return _states[CGOL.cell_state_index_current()]
     # used to check the last state of the cell
     var active_last: bool:
-        get: return _states[int(not CGOL.current_state)]
+        get: return _states[CGOL.cell_state_index_last()]
 
 
 # godot
