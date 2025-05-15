@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://tfvw2d1nueko"]
+[gd_scene load_steps=3 format=3 uid="uid://tfvw2d1nueko"]
 
 [ext_resource type="Script" uid="uid://b3316kixociw2" path="res://main.gd" id="1_0fcyj"]
+[ext_resource type="Script" uid="uid://q16u82d7lnc0" path="res://button_info.gd" id="2_0xm2m"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_0fcyj")
@@ -54,6 +55,20 @@ size_flags_horizontal = 8
 size_flags_vertical = 8
 text = "reset"
 
+[node name="Button_Info" type="Button" parent="UI/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+text = "This is not the best implementation of CGOL.
+Working on making it faster. But probably won't
+be updated for a while.
+If you don't understand this, research the rules
+for Conway's Game of Life online.
+Click this text to make it disappear."
+alignment = 0
+script = ExtResource("2_0xm2m")
+
 [connection signal="timeout" from="Timer" to="." method="next_frame"]
 [connection signal="button_up" from="UI/MarginContainer/VBoxContainer/ButtonPlayPause" to="." method="toggle_play_pause"]
 [connection signal="button_up" from="UI/MarginContainer/VBoxContainer/ButtonReset" to="." method="create_cells"]
+[connection signal="pressed" from="UI/MarginContainer/Button_Info" to="UI/MarginContainer/Button_Info" method="_on_pressed"]
